@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.92.2.0] - 2026-10-31
+
+**The free suite moves from `ubicloud-standard-2` to `ubicloud-standard-4`, still at 20 shards, because standard-2 made Free Tests slower than its revert rule allows.** #3617's week-1 check measured three paired rounds at main 5ba425af. On standard-2 the slowest shard took 380, 396 and 388 s, against 314, 327 and 336 s on standard-8, and runs finished in 514 to 526 s against 405 to 434 s. On standard-4 the slowest shard took 323, 335 and 317 s, inside standard-8's 313 to 336 s range from the same day's paired runs. Per shard, standard-4 runs 10 to 15 % slower than standard-8 and costs about 57 % as much per run, so it keeps most of the saving without slowing the run's slowest shard.
+
+### Changed
+- **`.github/workflows/free-tests.yml`**: `FREE_SUITE_RUNNER` is `ubicloud-standard-4`. The shard count, the dispatch overrides and the `RESOURCES:` line are unchanged.
+- **docs/TESTING_INTERNALS.md** names the new runner.
+
 ## [1.92.1.0] - 2026-10-31
 
 **`/ship` no longer runs the standalone Red Team on a branch's first full review pass at gate class or past 200 runtime lines.** The preregistered no-loss replay (GSTA-167 Round 7, handoffs/GSTA-167/noloss7-results.md) removed those Red Team lines from the recorded reviewer outputs. The rest of the stack still found 32 of the 41 panel blockers against 33 with them, a one-sided non-inferiority p of 0.00074 at a margin of 4. The Red Team still runs on a small diff raised to standard, on every post-fix full pass and on the scoped pass. A first pass that logs a CRITICAL gets it only if a post-fix full or scoped pass follows, because `/ship` passes `--critical-found` only to the repeat plan. The cut applies only when the branch's review log has no earlier review row. A new `/ship` after a stop, on a branch an earlier run already reviewed, keeps the Red Team on its first full pass. So does a run whose review log can't be read or holds a line that isn't valid JSON.
